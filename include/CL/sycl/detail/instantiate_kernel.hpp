@@ -50,7 +50,7 @@ auto prevent_arguments_from_optimization = [] (auto & ...args) {
 template <typename KernelName,
           typename Functor>
 __attribute__((noinline)) void
-instantiate_kernel(Functor f) noexcept {
+instantiate_kernel(Functor f) __attribute__((nothrow)) {
   /* The outlining compiler is expected to do some massage here or
      around and to insert some calls to \c serialize_arg and so on */
   f();
@@ -76,7 +76,7 @@ instantiate_kernel(Functor f) noexcept {
       be compiled.
 */
 TRISYCL_WEAK_ATTRIB_PREFIX void TRISYCL_WEAK_ATTRIB_SUFFIX
-set_kernel_task_marker(detail::task &) noexcept {
+set_kernel_task_marker(detail::task &) __attribute__((nothrow)) {
 }
 
 
