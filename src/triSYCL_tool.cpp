@@ -13,58 +13,12 @@ namespace po = boost::program_options;
 void
 put_file_into_source(std::istream &input_file,
                      std::ostream &output_file) {
-
-  input_file.seekg(0, std::ios_base::end);
-  uint32_t len = input_file.tellg() + 8l;
-  input_file.seekg(0, std::ios_base::beg);
-  fprintf(stderr, "len is %d\n", len);
   output_file << R"(#include "CL/sycl.hpp"
 
 namespace {
 
 const char binary[] = {
 )";
-
-  output_file << "'\\x01', '\\x00', '\\x00', '\\x00', "; // one symbols
-  output_file << "'\\x10', '\\x00', '\\x00', '\\x00', "; // 16-byte name
-  output_file << "'T', 'R', 'I', 'S', 'Y', 'C', 'L', '_', 'k', 'e', 'r', 'n', 'e', 'l', '_', '0', ";
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // section 0
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // offset 0
-  output_file << "'\\x02', '\\x00', '\\x00', '\\x00', "; // 2 args
-  output_file << "'\\x02', '\\x00', '\\x00', '\\x00', "; // global
-  output_file << "'\\x08', '\\x00', '\\x00', '\\x00', "; // size??
-  output_file << "'\\x08', '\\x00', '\\x00', '\\x00', "; // target_size??
-  output_file << "'\\x01', '\\x00', '\\x00', '\\x00', "; // target_align??
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // ext type
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // semantic
-  output_file << "'\\x02', '\\x00', '\\x00', '\\x00', "; // global
-  output_file << "'\\x08', '\\x00', '\\x00', '\\x00', "; // size??
-  output_file << "'\\x08', '\\x00', '\\x00', '\\x00', "; // target_size??
-  output_file << "'\\x01', '\\x00', '\\x00', '\\x00', "; // target_align??
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // ext type
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // semantic
-  output_file << "'\\x01', '\\x00', '\\x00', '\\x00', "; // one section
-  output_file << "'\\x00', '\\x00', '\\x00', '\\x00', "; // res id
-  output_file << "'\\x02', '\\x00', '\\x00', '\\x00', "; // text executable
-  output_file << "'\\x" << std::hex << std::setw(2) << std::setfill('0')
-	      << static_cast<unsigned int>((len >> 0) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 8 ) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 16) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 24) & 0xff) << "', ";
-
-  len -= 4;
-  output_file << "'\\x" << std::hex << std::setw(2) << std::setfill('0')
-	      << static_cast<unsigned int>((len >> 0) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 8 ) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 16) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 24) & 0xff) << "', ";
-
-  len -= 4;
-  output_file << "'\\x" << std::hex << std::setw(2) << std::setfill('0')
-	      << static_cast<unsigned int>((len >> 0) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 8 ) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 16) & 0xff) << "', '\\x"
-    << static_cast<unsigned int>((len >> 24) & 0xff) << "', ";
 
   for (;;) {
     char c;
