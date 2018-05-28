@@ -35,6 +35,9 @@ LDLIBS += -lpthread
 
 # To use OpenCL, set the TRISYCL_OPENCL flag
 CXXFLAGS += -DTRISYCL_OPENCL
+# To use SPIRV, set the TRISYCL_SPIRV flag
+CXXFLAGS += -DTRISYCL_SPIRV
+
 # To use generic OpenCL:
 LDLIBS += -lOpenCL
 #To use Xilinx OpenCL library without ICD
@@ -343,9 +346,14 @@ ifdef XILINX_SDX
 	SDACCEL_DEBUG='yes' SDX_USE_CLANG_39='yes' xocc $(XOCCFLAGS) --target hw \
 	  -k TRISYCL_kernel_0 -o $@ $*.xpirbc
 else
+ifdef TRISYCL_SPIRV
+%.kernel.bin: %.kernel.bc
+	$(SPIRV_TOOLS)/tools/llvm-spirv/llvm-spirv -o $@ $<
+else
 # If the target is SPIR, just use the bitcode as the kernel binary
 %.kernel.bin: %.kernel.bc
 	cp -p $< $@
+endif
 endif
 
 # Internalize the kernel binary into cl::sycl::drt::code::program with

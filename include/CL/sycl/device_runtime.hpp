@@ -215,10 +215,17 @@ set_kernel(detail::task &task,
        does not keep alive its own cl_program */
     static
 #endif
+#ifdef TRISYCL_SPIRV
+    program = boost::compute::program::create_with_il
+    (code::program::p->binary,
+     code::program::p->binary_size,
+     context);
+#else
     program = boost::compute::program::create_with_binary
     (code::program::p->binary,
      code::program::p->binary_size,
      context);
+#endif
   TRISYCL_DUMP_T("...on device with name "
                  << task.get_queue()->get_boost_compute().get_device().name());
   // Build the OpenCL program
