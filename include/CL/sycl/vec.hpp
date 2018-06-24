@@ -60,7 +60,11 @@ struct elem {
 
     @{
 */
+template <typename, int>
+class vec;
 
+template <typename dataT, int numElements>
+using __swizzled_vec__ = vec<dataT, numElements>;
 
 /** Small OpenCL vector class
 
@@ -85,6 +89,8 @@ class vec : public detail::small_array<DataType,
   using basic_type = typename detail::small_array<DataType,
                                                   vec<DataType, NumElements>,
                                                   NumElements>;
+
+  static const int out_dims = (NumElements + 1) / 2;
 
 public:
 
@@ -183,13 +189,30 @@ private:
   vec<dataT, numElements> &operator=(const dataT &rhs);
   bool operator==(const vec<dataT, numElements> &rhs) const;
   bool operator!=(const vec<dataT, numElements> &rhs) const;
-  // Swizzle methods (see notes)
-  swizzled_vec<T, out_dims> swizzle<int s1, ...>();
-#ifdef SYCL_SIMPLE_SWIZZLES
-  swizzled_vec<T, 4> xyzw();
-  ...
-#endif // #ifdef SYCL_SIMPLE_SWIZZLES
+
+
+
 #endif
+
+public:
+
+  template<typename convertT, rounding_mode roundingMode>
+  vec<convertT, NumElements> convert() const;
+
+  template<typename asT> asT as() const;
+  // Swizzle methods (see notes)
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, NumElements> swizzle() const;//<int s1, ...>();
+  __swizzled_vec__<DataType, 4> XYZW_ACCESS() const;
+  __swizzled_vec__<DataType, 4> RGBA_ACCESS() const;
+  __swizzled_vec__<DataType, 4> INDEX_ACCESS() const;
+  __swizzled_vec__<DataType, 4> XYZW_SWIZZLE() const;
+  __swizzled_vec__<DataType, 4> RGBA_SWIZZLE() const;
+
+  __swizzled_vec__<DataType, out_dims> lo() const;
+  __swizzled_vec__<DataType, out_dims> hi() const;
+  __swizzled_vec__<DataType, out_dims> odd() const;
+  __swizzled_vec__<DataType, out_dims> even() const;
 };
 
 
