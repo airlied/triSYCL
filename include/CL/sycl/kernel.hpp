@@ -16,8 +16,9 @@
 #include "CL/sycl/detail/debug.hpp"
 #include "CL/sycl/detail/shared_ptr_implementation.hpp"
 #include "CL/sycl/detail/unimplemented.hpp"
-//#include "CL/sycl/info/kernel.hpp"
+#include "CL/sycl/info/kernel.hpp"
 #include "CL/sycl/kernel/detail/kernel.hpp"
+#include "CL/sycl/program.hpp"
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/kernel/detail/opencl_kernel.hpp"
 #endif
@@ -90,25 +91,61 @@ class kernel
 #endif
 
 
-#if 0
-  /// Return the context that this kernel is defined for
-  //context get_context() const;
-
-  /// Return the program that this kernel is part of
-  //program get_program() const;
-
   /** Query information from the kernel object using the
       info::kernel_info descriptor.
   */
   template <info::kernel param>
-  typename info::param_traits<info::kernel, param>::type
-    get_info() const {
-    detail::unimplemented();
-  }
-#endif
+  inline auto get_info() const;
+
+  template <info::kernel_work_group param>
+  inline auto get_work_group_info(const device &dev) const;
 
 };
 
+template<>
+inline auto kernel::get_info<info::kernel::function_name>() const {
+  return string_class {};
+}
+
+template<>
+inline auto kernel::get_info<info::kernel::num_args>() const {
+  return 0;
+}
+
+template<>
+inline auto kernel::get_info<info::kernel::reference_count>() const {
+  return 0;
+}
+
+template<>
+inline auto kernel::get_info<info::kernel::attributes>() const {
+  return string_class {};
+}
+
+template<>
+inline auto kernel::get_work_group_info<info::kernel_work_group::global_work_size>(const device &dev) const {
+  return cl::sycl::range<3> { 128, 128, 128 };
+}
+
+template<>
+inline auto kernel::get_work_group_info<info::kernel_work_group::work_group_size>(const device &dev) const {
+  return 0;
+}  
+
+template<>
+inline auto kernel::get_work_group_info<info::kernel_work_group::compile_work_group_size>(const device &dev) const {
+  return cl::sycl::range<3> { 128, 128, 128 };
+}
+
+template<>
+inline auto kernel::get_work_group_info<info::kernel_work_group::preferred_work_group_size_multiple>(const device &dev) const {
+  return 0;
+}
+
+template<>
+inline auto kernel::get_work_group_info<info::kernel_work_group::private_mem_size>(const device &dev) const {
+  return 0;
+}
 /// @} End the execution Doxygen group
 
 }
