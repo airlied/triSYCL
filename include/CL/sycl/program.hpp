@@ -13,11 +13,18 @@
 #include <boost/compute.hpp>
 #endif
 
+#include <map>
 #include "CL/sycl/detail/debug.hpp"
 #include "CL/sycl/detail/shared_ptr_implementation.hpp"
 #include "CL/sycl/detail/unimplemented.hpp"
 #include "CL/sycl/kernel.hpp"
+#include "CL/sycl/program/detail/host_program.hpp"
+#ifdef TRISYCL_OPENCL
+#include "CL/sycl/program/detail/opencl_program.hpp"
+#endif
 #include "CL/sycl/program/detail/program.hpp"
+#include "CL/sycl/info/program.hpp"
+
 
 namespace cl {
 namespace sycl {

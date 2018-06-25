@@ -72,6 +72,7 @@
 #include "CL/sycl/device/detail/device_tail.hpp"
 #include "CL/sycl/device/detail/opencl_device_tail.hpp"
 #include "CL/sycl/platform/detail/platform_tail.hpp"
+#include "CL/sycl/program/detail/program_tail.hpp"
 #include "CL/sycl/platform/detail/host_platform_tail.hpp"
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/platform/detail/opencl_platform_tail.hpp"
