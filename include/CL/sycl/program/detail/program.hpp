@@ -32,6 +32,9 @@ class program : detail::debug<detail::program> {
   virtual cl_program get() const = 0;
 #endif
 
+  /// Return true if the program is a SYCL host program
+  virtual bool is_host() const = 0;
+
   virtual ~program() {}
 };
 

@@ -9,6 +9,10 @@ namespace detail {
 class host_program : public detail::program,
 		     public detail::singleton<host_program> {
 
+  /// Return true since the program is a SYCL host program
+  bool is_host() const override {
+    return true;
+  }
 };
 
 }
