@@ -37,6 +37,15 @@ namespace sycl {
 class context;
 class device_selector;
 
+namespace property {
+
+namespace queue {
+class enable_profiling  {
+public:
+  enable_profiling() {}
+};
+}
+}
 /** \addtogroup execution Platforms, contexts, devices and queues
     @{
 */
@@ -69,6 +78,15 @@ TRISYCL_INFO_PARAM_TRAITS(queue::context, context)
 
 }
 
+class property_list {
+public:
+
+  property_list() {}
+
+  property_list(const property_list &) = delete;
+  template<typename propsT>
+  property_list(propsT props);
+};
 
 /** SYCL queue, similar to the OpenCL queue concept.
 
@@ -104,8 +122,7 @@ public:
       \todo Check with the specification if it is the host queue or
       the one related to the default device selector.
   */
-  queue() : implementation_t { new detail::host_queue } {}
-
+  explicit queue(const property_list &propList = {}) : implementation_t { new detail::host_queue } {}
 
   /** This constructor creates a SYCL queue from an OpenCL queue
 
@@ -123,7 +140,7 @@ public:
       default constructor.
 
   */
-  explicit queue(async_handler asyncHandler) : queue { } {
+  queue(const async_handler &asyncHandler, const property_list &propList = {}) : queue { propList } {
     detail::unimplemented();
   }
 
@@ -137,10 +154,15 @@ public:
       function if and only if there is an \c async_handler provided.
   */
   queue(const device_selector &deviceSelector,
-        async_handler asyncHandler = nullptr)
+        const property_list &propList = {})
     // Just create the queue from the selected device
-    : queue { device { deviceSelector }, asyncHandler} { }
+    : queue { device { deviceSelector }, nullptr, propList } { }
 
+  queue(const device_selector &deviceSelector,
+        const async_handler &asyncHandler,
+	const property_list &propList = {})
+    // Just create the queue from the selected device
+    : queue { device { deviceSelector }, asyncHandler, propList } { }
 
   /** A queue is created for a SYCL device
 
@@ -148,7 +170,12 @@ public:
       function.
   */
   queue(const device &d,
-        async_handler asyncHandler = nullptr) : implementation_t {
+	const property_list &propList = {}) : queue { } {
+        detail::unimplemented();
+  }
+  queue(const device &d,
+        const async_handler &asyncHandler,
+	const property_list &propList = {}) : implementation_t {
 #ifdef TRISYCL_OPENCL
     d.is_host()
       ? std::shared_ptr<detail::queue>{ new detail::host_queue }
@@ -173,42 +200,13 @@ public:
   */
   queue(const context &syclContext,
         const device_selector &deviceSelector,
-        async_handler asyncHandler = nullptr) : queue { } {
+        const property_list &propList = {}) : queue { } {
     detail::unimplemented();
   }
-
-
-  /** Creates a command queue using clCreateCommandQueue from a context
-      and a device
-
-      Return synchronous errors regarding the creation of the queue.
-
-      If and only if there is an asyncHandler provided, it reports
-      asynchronous errors via the async_handler callback function in
-      conjunction with the synchronization and throw methods.
-  */
   queue(const context &syclContext,
-        const device &syclDevice,
-        async_handler asyncHandler = nullptr) : queue { } {
-    detail::unimplemented();
-  }
-
-
-  /** Creates a command queue using clCreateCommandQueue from a context
-      and a device
-
-      It enables profiling on the queue if the profilingFlag is set to
-      true.
-
-      Return synchronous errors regarding the creation of the queue. If
-      and only if there is an asyncHandler provided, it reports
-      asynchronous errors via the async_handler callback function in
-      conjunction with the synchronization and throw methods.
-  */
-  queue(const context &syclContext,
-        const device &syclDevice,
-        info::queue_profiling profilingFlag,
-        async_handler asyncHandler = nullptr) : queue { } {
+        const device_selector &deviceSelector,
+        const async_handler &asyncHandler,
+	const property_list &propList = {}) : queue { } {
     detail::unimplemented();
   }
 
@@ -223,7 +221,7 @@ public:
       asynchronous errors via the async_handler callback function in
       conjunction with the synchronization and throw methods.
   */
-  queue(const cl_command_queue &q, async_handler ah = nullptr)
+  queue(const cl_command_queue &q, const context &syclContext, const async_handler &ah = {})
     : queue { boost::compute::command_queue { q }, ah } {}
 
 
@@ -370,6 +368,9 @@ public:
     return submit(cgf);
   }
 
+
+  template <typename propertyT>
+  bool has_property() const { return false; }
 };
 
 /// @} to end the execution Doxygen group
