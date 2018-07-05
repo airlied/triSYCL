@@ -19,6 +19,7 @@
 #include "CL/sycl/detail/debug.hpp"
 #include "CL/sycl/detail/default_classes.hpp"
 #include "CL/sycl/detail/unimplemented.hpp"
+#include "CL/sycl/detail/property.hpp"
 #include "CL/sycl/device.hpp"
 #include "CL/sycl/device_selector.hpp"
 #include "CL/sycl/exception.hpp"
@@ -41,7 +42,7 @@ class device_selector;
 namespace property {
 
 namespace queue {
-class enable_profiling  {
+class enable_profiling : public detail::property {
 public:
   enable_profiling() {}
 };
@@ -51,13 +52,12 @@ public:
     @{
 */
 class property_list {
+  vector_class<detail::property> plist;
 public:
-
-  property_list() {}
-
-  property_list(const property_list &) = delete;
-  template<typename propsT>
-  property_list(propsT props);
+  template<typename... propsT>
+  property_list(propsT... props) {
+    
+  };
 };
 
 /** SYCL queue, similar to the OpenCL queue concept.
@@ -341,7 +341,8 @@ public:
   bool has_property() const { return false; }
 
   template <typename propertyT>
-  propertyT get_property() const;
+  propertyT get_property() const {
+  }
 };
 
 template<>
