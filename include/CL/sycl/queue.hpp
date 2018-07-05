@@ -25,6 +25,7 @@
 #include "CL/sycl/handler.hpp"
 #include "CL/sycl/handler_event.hpp"
 #include "CL/sycl/info/param_traits.hpp"
+#include "CL/sycl/info/queue.hpp"
 #include "CL/sycl/parallelism.hpp"
 #include "CL/sycl/queue/detail/host_queue.hpp"
 #ifdef TRISYCL_OPENCL
@@ -49,35 +50,6 @@ public:
 /** \addtogroup execution Platforms, contexts, devices and queues
     @{
 */
-
-namespace info {
-
-using queue_profiling = bool;
-
-/** Queue information descriptors
-
-    From specification C.4
-
-    \todo unsigned int?
-
-    \todo To be implemented
-*/
-enum class queue : int {
-  context,
-  device,
-  reference_count,
-  properties
-};
-
-/** Dummy example for get_info() on queue::context that would return a
-    context
-
-    \todo Describe all the types
-*/
-TRISYCL_INFO_PARAM_TRAITS(queue::context, context)
-
-}
-
 class property_list {
 public:
 
@@ -330,11 +302,7 @@ public:
 
   /// Queries the platform for cl_command_queue info
   template <info::queue param>
-  typename info::param_traits<info::queue, param>::type get_info() const  {
-    detail::unimplemented();
-    return {};
-  }
-
+  inline auto get_info() const;
 
   /** Submit a command group functor to the queue, in order to be
       scheduled for execution on the device
@@ -371,8 +339,25 @@ public:
 
   template <typename propertyT>
   bool has_property() const { return false; }
+
+  template <typename propertyT>
+  propertyT get_property() const;
 };
 
+template<>
+inline auto queue::get_info<info::queue::device>() const {
+  return implementation->get_device();
+}
+
+template<>
+inline auto queue::get_info<info::queue::context>() const {
+  return implementation->get_context();
+}
+
+template<>
+inline auto queue::get_info<info::queue::reference_count>() const {
+  return 0;
+}
 /// @} to end the execution Doxygen group
 
 }
