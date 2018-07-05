@@ -310,11 +310,11 @@ public:
       Use an explicit functor parameter taking a handler& so we can use
       "auto" in submit() lambda parameter.
 
-      \todo Add in the spec an implicit conversion of handler_event to
+      \todo Add in the spec an implicit conversion of event to
       queue& so it is possible to chain operations on the queue
   */
   template <typename Handler_Functor>
-  handler_event submit(Handler_Functor cgf) {
+  event submit(Handler_Functor cgf) {
     handler command_group_handler { implementation };
     cgf(command_group_handler);
     return {};
@@ -330,7 +330,7 @@ public:
       Return a command group functor event, which is corresponds to the
       queue the command group functor is being enqueued on.
   */
-  handler_event submit(std::function<void(handler &)> cgf, queue &secondaryQueue) {
+  event submit(std::function<void(handler &)> cgf, queue &secondaryQueue) {
     detail::unimplemented();
     // Since it is not implemented, always submit on the main queue
     return submit(cgf);

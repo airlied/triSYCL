@@ -16,7 +16,7 @@
 
     \todo To be implemented
 */
-class handler_event {
+class event {
 /*
  public:
   event get_kernel() const;
