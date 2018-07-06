@@ -28,6 +28,7 @@
 #include "CL/sycl/info/param_traits.hpp"
 #include "CL/sycl/info/queue.hpp"
 #include "CL/sycl/parallelism.hpp"
+#include "CL/sycl/property_list.hpp"
 #include "CL/sycl/queue/detail/host_queue.hpp"
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/queue/detail/opencl_queue.hpp"
@@ -52,14 +53,6 @@ public:
 /** \addtogroup execution Platforms, contexts, devices and queues
     @{
 */
-class property_list {
-
-public:
-  template<typename... propsT,
-	   typename = std::enable_if_t<detail::all_true<std::is_convertible<propsT, detail::property>::value ...>::value>>
-  property_list(propsT... props) {
-  }
-};
 
 /** SYCL queue, similar to the OpenCL queue concept.
 
