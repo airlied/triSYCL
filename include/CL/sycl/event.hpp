@@ -8,44 +8,96 @@
     This file is distributed under the University of Illinois Open Source
     License. See LICENSE.TXT for details.
 */
+#include "CL/sycl/info/event.hpp"
+#include "CL/sycl/event/detail/event.hpp"
+
 namespace cl {
 namespace sycl {
 
-class event {
+class event : public detail::shared_ptr_implementation<event, detail::event> {
 
+  cl_event cl;
 public:
 
   event() = default;
 
 
 /** \todo To be implemented */
-#if 0
-  explicit event(cl_event clEvent);
+  bool is_host() const { return false; }
 
-  event(const event & rhs);
+  explicit event(cl_event clEvent) {}
 
-  cl_event get();
+  event(const event & rhs) {}
 
-  vector_class<event> get_wait_list();
+  cl_event get() {
+    detail::unimplemented();
+    return {};
+  }
 
-  void wait();
+  vector_class<event> get_wait_list() {
+    detail::unimplemented();
+  }
 
-  static void wait(const vector_class<event> &eventList);
+  void wait() {
+    detail::unimplemented();
+  }
+  static void wait(const vector_class<event> &eventList) {}
 
-  void wait_and_throw();
+  void wait_and_throw() {
+    detail::unimplemented();
+  }
 
-  static void wait_and_throw(const vector_class<event> &eventList);
+  static void wait_and_throw(const vector_class<event> &eventList) {}
 
   template <info::event param>
-  typename param_traits<info::event, param>::type get_info() const;
+  inline auto get_info() const;
 
   template <info::event_profiling param>
-  typename param_traits<info::event_profiling,
-                        param>::type get_profiling_info() const;
-#endif
+  inline auto get_profiling_info() const;
+
 };
 
+template<>
+inline auto event::get_info<info::event::command_execution_status>() const {
+  return cl::sycl::info::event_command_status::submitted;
 }
+
+template<>
+inline auto event::get_info<info::event::reference_count>() const {
+    return static_cast<cl::sycl::cl_uint>(0);
+}
+
+template<>
+inline auto event::get_profiling_info<info::event_profiling::command_submit>() const {
+      return static_cast<cl::sycl::cl_ulong>(0);
+}
+
+template<>
+inline auto event::get_profiling_info<info::event_profiling::command_start>() const {
+      return static_cast<cl::sycl::cl_ulong>(0);
+}
+
+template<>
+inline auto event::get_profiling_info<info::event_profiling::command_end>() const {
+      return static_cast<cl::sycl::cl_ulong>(0);
+}
+
+  
+}
+
+}
+
+namespace std {
+
+template <> struct hash<cl::sycl::event> {
+
+  auto operator()(const cl::sycl::event &e) const {
+    // Forward the hashing to the implementation
+    return e.hash();
+  }
+
+};
+
 }
 
 /*
