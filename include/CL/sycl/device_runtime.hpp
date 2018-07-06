@@ -207,7 +207,8 @@ set_kernel(detail::task &task,
   // auto binary = kernel_IR.find(kernel_name);
   // if (binary == kernel_IR.end()) {
 #ifdef TRISYCL_OPENCL
-  auto context = task.get_queue()->get_boost_compute().get_context();
+  auto cl_context = task.get_queue()->get_boost_compute().get_context();
+  auto sycl_context = task.get_queue()->get_context();
   // Construct an OpenCL program from the precompiled kernel file
   auto
 #ifdef SDX_KERNEL_PROGRAM_OWNING_BUG
@@ -218,14 +219,14 @@ set_kernel(detail::task &task,
     program = boost::compute::program::create_with_binary
     (code::program::p->binary,
      code::program::p->binary_size,
-     context);
+     cl_context);
   TRISYCL_DUMP_T("...on device with name "
                  << task.get_queue()->get_boost_compute().get_device().name());
   // Build the OpenCL program
   program.build();
 
   // Build a SYCL kernel from the OpenCL kernel
-  cl::sycl::kernel k { boost::compute::kernel { program, kernel_short_name } };
+  cl::sycl::kernel k { boost::compute::kernel { program, kernel_short_name }, sycl_context };
 
   task.set_kernel(k.implementation);
 #endif
