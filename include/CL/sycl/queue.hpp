@@ -94,7 +94,7 @@ public:
       \todo Check with the specification if it is the host queue or
       the one related to the default device selector.
   */
-  explicit queue(const property_list &propList = {}) : implementation_t { new detail::host_queue } {}
+  explicit queue(const property_list &propList = {});
 
   /** This constructor creates a SYCL queue from an OpenCL queue
 
@@ -112,10 +112,7 @@ public:
       default constructor.
 
   */
-  queue(const async_handler &asyncHandler, const property_list &propList = {}) : queue { propList } {
-    detail::unimplemented();
-  }
-
+  queue(const async_handler &asyncHandler, const property_list &propList = {});
 
   /** Creates a queue for the device provided by the device selector
 
@@ -142,9 +139,16 @@ public:
       function.
   */
   queue(const device &d,
-	const property_list &propList = {}) : queue { } {
-        detail::unimplemented();
-  }
+	const property_list &propList = {})  : implementation_t {
+#ifdef TRISYCL_OPENCL
+    d.is_host()
+      ? std::shared_ptr<detail::queue>{ new detail::host_queue }
+      : detail::opencl_queue::instance(d)
+#else
+    new detail::host_queue
+#endif
+  } { }
+
   queue(const device &d,
         const async_handler &asyncHandler,
 	const property_list &propList = {}) : implementation_t {
@@ -173,13 +177,41 @@ public:
   queue(const context &syclContext,
         const device_selector &deviceSelector,
         const property_list &propList = {}) : queue { } {
-    detail::unimplemented();
+    device d = deviceSelector.select_device();
+    vector_class<device> ctx_devices = syclContext.get_devices();
+    bool found = false;
+    for (const auto &sd : syclContext.get_devices())
+      if (sd == d)
+	found = true;
+    if (found == false)
+      throw cl::sycl::invalid_object_error("Device doesn't belong to context\n");
+    implementation = 
+#ifdef TRISYCL_OPENCL
+      d.is_host() ? std::shared_ptr<detail::queue>{ new detail::host_queue }
+    : detail::opencl_queue::instance(d);
+#else
+    new detail::host_queue;
+#endif
   }
   queue(const context &syclContext,
         const device_selector &deviceSelector,
         const async_handler &asyncHandler,
 	const property_list &propList = {}) : queue { } {
-    detail::unimplemented();
+    device d = deviceSelector.select_device();
+    vector_class<device> ctx_devices = syclContext.get_devices();
+    bool found = false;
+    for (const auto &sd : syclContext.get_devices())
+      if (sd == d)
+	found = true;
+    if (found == false)
+      throw cl::sycl::invalid_object_error("Device doesn't belong to context\n");
+    implementation = 
+#ifdef TRISYCL_OPENCL
+      d.is_host() ? std::shared_ptr<detail::queue>{ new detail::host_queue }
+    : detail::opencl_queue::instance(d);
+#else
+    new detail::host_queue;
+#endif
   }
 
 
@@ -357,7 +389,7 @@ inline auto queue::get_info<info::queue::context>() const {
 
 template<>
 inline auto queue::get_info<info::queue::reference_count>() const {
-  return 0;
+  return static_cast<cl::sycl::cl_uint>(0);
 }
 /// @} to end the execution Doxygen group
 
