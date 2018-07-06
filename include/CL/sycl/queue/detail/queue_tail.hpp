@@ -17,7 +17,7 @@ namespace sycl {
 /* has to be inline as it references default_selector */
 inline queue::queue(const property_list &propList) : queue(default_selector {}, propList) {}
 
-inline queue::queue(const async_handler &asyncHandler, const property_list &propList) : queue(default_selector {}, asyncHandler, propList) {}
+inline queue::queue(const async_handler asyncHandler, const property_list &propList) : queue(default_selector {}, asyncHandler, propList) {}
 
 }
 }

@@ -32,6 +32,7 @@
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/queue/detail/opencl_queue.hpp"
 #endif
+#include "CL/sycl/detail/all_true.hpp"
 
 namespace cl {
 namespace sycl {
@@ -52,12 +53,12 @@ public:
     @{
 */
 class property_list {
-  vector_class<detail::property> plist;
+
 public:
-  template<typename... propsT>
+  template<typename... propsT,
+	   typename = std::enable_if_t<detail::all_true<std::is_convertible<propsT, detail::property>::value ...>::value>>
   property_list(propsT... props) {
-    
-  };
+  }
 };
 
 /** SYCL queue, similar to the OpenCL queue concept.
@@ -112,7 +113,7 @@ public:
       default constructor.
 
   */
-  queue(const async_handler &asyncHandler, const property_list &propList = {});
+  queue(const async_handler asyncHandler, const property_list &propList = {});
 
   /** Creates a queue for the device provided by the device selector
 
