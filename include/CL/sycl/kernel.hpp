@@ -41,6 +41,7 @@ class kernel
      the SYCL model */
   : public detail::shared_ptr_implementation<kernel, detail::kernel> {
 
+  friend class program;
   // The type encapsulating the implementation
   using implementation_t = typename kernel::shared_ptr_implementation;
 
@@ -67,7 +68,7 @@ class kernel
       should release the passed cl_kernel object when it is no longer
       needed.
   */
-  kernel(cl_kernel k) : kernel { boost::compute::kernel { k } } {}
+  kernel(cl_kernel k, const cl::sycl::context &syclContext) : kernel { boost::compute::kernel { k }, syclContext } {}
 
 
   /** Construct a kernel class instance using a boost::compute::kernel
@@ -76,7 +77,7 @@ class kernel
 
       Return synchronous errors via the SYCL exception class.
   */
-  kernel(const boost::compute::kernel &k)
+  kernel(const boost::compute::kernel &k, const cl::sycl::context &syclContext)
     : implementation_t { detail::opencl_kernel::instance(k) } {}
 
 
