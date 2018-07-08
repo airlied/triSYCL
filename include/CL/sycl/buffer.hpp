@@ -26,6 +26,7 @@
 #include "CL/sycl/id.hpp"
 #include "CL/sycl/queue.hpp"
 #include "CL/sycl/range.hpp"
+#include "CL/sycl/property_list.hpp"
 
 namespace cl {
 namespace sycl {
@@ -110,7 +111,7 @@ public:
 
       \param[in] allocator is to be used by the SYCL runtime
   */
-  buffer(const range<Dimensions> &r, Allocator allocator = {})
+  buffer(const range<Dimensions> &r, Allocator allocator = {}, const property_list &propList = {})
     : implementation_t { detail::waiter<T, Dimensions, Allocator>(
                          new detail::buffer<T, Dimensions> { r }) }
       {}
@@ -145,7 +146,7 @@ public:
             typename = std::enable_if_t<!std::is_const<Dependent>::value>>
   buffer(const T *host_data,
          const range<Dimensions> &r,
-         Allocator allocator = {})
+         Allocator allocator = {}, const property_list &propList = {})
     : implementation_t { detail::waiter(new detail::buffer<T, Dimensions>
                          { host_data, r }) }
   {}
@@ -169,7 +170,7 @@ public:
   */
   buffer(T *host_data,
          const range<Dimensions> &r,
-         Allocator allocator = {})
+         Allocator allocator = {}, const property_list &propList = {})
     : implementation_t { detail::waiter(new detail::buffer<T, Dimensions>
                          { host_data, r }) }
   {}

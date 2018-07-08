@@ -30,6 +30,7 @@ namespace sycl {
     @{
 */
 
+class context;
 /** SYCL kernel
 
     \todo To be implemented
@@ -51,6 +52,8 @@ class kernel
   // Allows the comparison operation to access the implementation
   friend implementation_t;
 
+  cl::sycl::context context;
+  shared_ptr_class<program> prog;
  public:
 
   // Make the implementation member directly accessible in this class
@@ -60,6 +63,11 @@ class kernel
       \code cl_kernel \endcode associated with it */
   kernel() = delete;
 
+  bool is_host() const { return true; }
+
+  cl::sycl::context get_context() const { return context; };
+
+  cl::sycl::program get_program() const { return *prog; };
 #ifdef TRISYCL_OPENCL
   /** Constructor for SYCL kernel class given an OpenCL kernel object
       with set arguments, valid for enqueuing

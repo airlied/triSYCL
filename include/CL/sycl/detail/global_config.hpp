@@ -34,6 +34,7 @@
    version is used */
 #define TRISYCL_MAKE_BOOST_CIRCULARBUFFER_THREAD_SAFE
 
+#define TRISYCL_OPENCL
 
 /** Define TRISYCL_OPENCL to add OpenCL
 

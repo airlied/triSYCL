@@ -41,6 +41,8 @@ enum class program_state {
 
 */
 
+class kernel;
+class contxet;
 class program
     /* Use the underlying kernel implementation that can be shared in
      the SYCL model */
