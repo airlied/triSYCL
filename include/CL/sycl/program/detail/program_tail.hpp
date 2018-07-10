@@ -20,12 +20,14 @@ namespace sycl {
 template<typename kernelT>
 inline cl::sycl::kernel program::get_kernel() const
 {
-  return *(kernels.at(NULL));
+  return cl::sycl::kernel { nullptr, get_context() };
+  //  return *(kernels.at(NULL));
 }
   
 inline cl::sycl::kernel program::get_kernel(string_class kernelName) const
 {
-  return *(kernels.at(NULL));
+  return cl::sycl::kernel { nullptr, get_context() };
+  //  return *(kernels.at(NULL));
 }
 
 /*

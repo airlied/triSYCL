@@ -103,7 +103,6 @@ class program
   template <typename kernelT>
   void compile_with_kernel_type(string_class compileOptions = "")
   {
-    kernelT kern;
 
   }
 
