@@ -20,13 +20,14 @@ int test_main(int argc, char *argv[]) {
     )", boost::compute::system::default_context());
   // Build a kernel from the OpenCL kernel
   program.build();
-  /* Get the OpenCL kernel as its own variable for extended lifetime
-     so we do not have to have a clRetainKernel */
-  auto bk = boost::compute::kernel { program, "empty" };
-  kernel k { bk.get() };
 
   // Construct the queue from the defaul OpenCL one
   queue q { boost::compute::system::default_queue() };
+
+  /* Get the OpenCL kernel as its own variable for extended lifetime
+     so we do not have to have a clRetainKernel */
+  auto bk = boost::compute::kernel { program, "empty" };
+  kernel k { bk.get(), q.get_context() };
 
   // \todo add to spec section Defining kernels using OpenCL C kernel objects
   q.submit([&](handler &cgh) {

@@ -17,11 +17,11 @@ Vector a = { 1, 2, 3 };
 
 auto test1 = [](auto program, auto b_queue) {
 
-  kernel k { boost::compute::kernel { program, "zeroify" } };
-
   queue q { b_queue };
   cl::sycl::context host_context;
   cl::sycl::context device_context = q.get_context();
+
+  kernel k { boost::compute::kernel { program, "zeroify" }, device_context };
 
   buffer<int> A { std::begin(a), std::end(a) };
 
@@ -49,12 +49,13 @@ auto test1 = [](auto program, auto b_queue) {
 };
 
 auto test2 = [](auto program, auto b_queue) {
-  kernel k1 { boost::compute::kernel { program, "oneify" } };
-  kernel k2 { boost::compute::kernel { program, "addone" } };
 
   queue q { b_queue };
   cl::sycl::context host_context;
   cl::sycl::context device_context = q.get_context();
+
+  kernel k1 { boost::compute::kernel { program, "oneify" }, device_context };
+  kernel k2 { boost::compute::kernel { program, "addone" }, device_context };
 
   buffer<int> A { std::begin(a), std::end(a) };
 
@@ -95,12 +96,13 @@ auto test2 = [](auto program, auto b_queue) {
 
 
 auto test3 = [](auto program, auto b_queue) {
-  kernel k1 { boost::compute::kernel { program, "zeroify" } };
-  kernel k2 { boost::compute::kernel { program, "addone" } };
 
   queue q { b_queue };
   cl::sycl::context host_context;
   cl::sycl::context device_context = q.get_context();
+
+  kernel k1 { boost::compute::kernel { program, "zeroify" }, device_context };
+  kernel k2 { boost::compute::kernel { program, "addone" }, device_context };
 
   buffer<int> A { std::begin(a), std::end(a) };
 

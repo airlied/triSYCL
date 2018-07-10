@@ -47,7 +47,7 @@ int test_main(int argc, char *argv[]) {
     program.build();
 
     // Get the OpenCL kernel
-    kernel k { boost::compute::kernel { program, "vector_add" } };
+    kernel k { boost::compute::kernel { program, "vector_add" }, q.get_context() };
 
     // Launch a single instance of the kernel doing the addition
     q.submit([&](handler &cgh) {

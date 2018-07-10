@@ -21,10 +21,10 @@ int test_main(int argc, char *argv[]) {
   /* Get the OpenCL kernel as its own variable for extended lifetime
      so we do not have to have a clRetainKernel */
   auto bk = boost::compute::kernel { program, "empty" };
-  kernel k { bk.get() };
+  kernel k { bk.get(), cl::sycl::context {} };
 
   // Verify that the cache works when asking for same kernel
-  kernel k2 { bk.get() };
+  kernel k2 { bk.get(), cl::sycl::context {} };
   BOOST_CHECK(k == k2);
 
   /* Do not use the default assignment check check_assignment() since
