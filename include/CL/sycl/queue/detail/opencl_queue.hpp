@@ -52,7 +52,7 @@ class opencl_queue : public detail::queue,
 
   /// Return the SYCL device associated to the queue
   cl::sycl::device get_device() const override {
-    return q.get_device();
+    return cl::sycl::device { q.get_device() };
   }
 
 
