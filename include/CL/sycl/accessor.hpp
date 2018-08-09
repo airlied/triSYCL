@@ -104,7 +104,7 @@ class accessor :
       target_buffer.implementation->implementation, command_group_handler }
   } {
     static_assert(Target == access::target::global_buffer
-                  || Target == access::target::constant_buffer,
+                  || Target == access::target::constant_buffer || PlaceHolder == access::placeholder::true_t,
                   "access target should be global_buffer or constant_buffer "
                   "when a handler is used");
     // Now the implementation is created, register it
@@ -124,8 +124,8 @@ class accessor :
     new detail::accessor<DataType, Dimensions, AccessMode, Target, PlaceHolder> {
       target_buffer.implementation->implementation }
   } {
-    static_assert(Target == access::target::host_buffer,
-                  "without a handler, access target should be host_buffer");
+    static_assert(Target == access::target::host_buffer || PlaceHolder == access::placeholder::true_t,
+                  "without a handler or placeholder, access target should be host_buffer");
   }
 
 
@@ -199,6 +199,10 @@ class accessor :
     return implementation->get_range();
   }
 
+  /** Returns if the accessor is a placeholder
+   \todo
+   */
+  constexpr bool is_placeholder() const { return false; }
 
   /** Returns the total number of elements behind the accessor
 
