@@ -158,6 +158,13 @@ public:
   }
 #endif
 
+  template <typename DataType,
+	    int Dimensions,
+            access::mode Mode,
+            access::target Target>
+  void require(accessor<DataType, Dimensions, Mode, Target, access::placeholder::true_t> acc) {
+      detail::unimplemented();
+  }
 private:
 
   /** Schedule the kernel
