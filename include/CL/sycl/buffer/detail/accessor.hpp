@@ -128,7 +128,7 @@ public:
     buf { target_buffer }, array { target_buffer->access } {
     target_buffer->template track_access_mode<Mode>();
     TRISYCL_DUMP_T("Create a host accessor write = " << is_write_access());
-    static_assert(Target == access::target::host_buffer,
+    static_assert(Target == access::target::host_buffer || PlaceHolder == access::placeholder::true_t,
                   "without a handler, access target should be host_buffer");
     /* The host needs to wait for all the producers of the buffer to
        have finished */
