@@ -55,17 +55,20 @@ template <typename T, int Dimensions> class buffer;
 template <typename T,
           int Dimensions,
           access::mode Mode,
-          access::target Target /* = access::global_buffer */>
+          access::target Target /* = access::global_buffer */,
+          access::placeholder PlaceHolder>
 class accessor :
     public detail::accessor_base,
     public std::enable_shared_from_this<accessor<T,
                                                  Dimensions,
                                                  Mode,
-                                                 Target>>,
+                                                 Target,
+                                                 PlaceHolder>>,
     public detail::debug<accessor<T,
                                   Dimensions,
                                   Mode,
-                                  Target>> {
+                                  Target,
+                                  PlaceHolder>> {
   /** Keep a reference to the accessed buffer
 
       Beware that it owns the buffer, which means that the accessor
