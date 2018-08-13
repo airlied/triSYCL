@@ -12,7 +12,7 @@
 */
 
 #include "CL/sycl/detail/array_tuple_helpers.hpp"
-
+#include "CL/sycl/address_space.hpp"
 namespace cl {
 namespace sycl {
 
@@ -61,6 +61,20 @@ struct elem {
     @{
 */
 
+#include "CL/sycl/detail/vec.hpp"
+
+/** Accessors to access hex indexed members of a small array.
+  * There are two macros, one for 0-9, one for A-F.
+  */
+#define TRISYCL_DECLARE_S(x)                                            \
+  DataType& s##x() {                                                    \
+    return (*this)[(x)];                                                \
+  }
+
+#define TRISYCL_DECLARE_Sx(x)                                           \
+  DataType& s##x() {                                                    \
+    return (*this)[(0x##x)];                                            \
+  }
 
 /** Small OpenCL vector class
 
@@ -78,120 +92,186 @@ struct elem {
 
     \todo rename in the specification element_type to value_type
 */
-template <typename DataType, int NumElements>
-class vec : public detail::small_array<DataType,
-                                       vec<DataType, NumElements>,
-                                       NumElements> {
-  using basic_type = typename detail::small_array<DataType,
-                                                  vec<DataType, NumElements>,
-                                                  NumElements>;
+
+template <typename DataType>
+class vec<DataType, 1> : public detail::base_vec<DataType, 1> {
+  using basic_type = detail::base_vec<DataType, 1>;
 
 public:
-
-  /** Construct a vec from anything from a scalar (to initialize all the
-      elements with this value) up to an aggregate of scalar and vector
-      types (in this case the total number of elements must match the size
-      of the vector)
-  */
-  template <typename... Types>
-  vec(const Types... args)
-    : basic_type { detail::expand<vec>(flatten_to_tuple<vec>(args...)) } { }
-
-
-/// Use classical constructors too
-  vec() = default;
-
 
   // Inherit of all the constructors
   using basic_type::basic_type;
 
-private:
+  operator DataType() const { return *this[0]; }
 
-  /** Flattening helper that does not change scalar values but flatten a
-      vec<T, n> v into a tuple<T, T,..., T>{ v[0], v[1],..., v[n-1] }
-
-      If we have a vector, just forward its array content since an array
-      has also a tuple interface :-) (23.3.2.9 Tuple interface to class
-      template array [array.tuple])
-  */
-  template <typename V, typename Element, int s>
-  static auto flatten(const vec<Element, s> i) {
-    static_assert(s <= V::dimension,
-                  "The element i will not fit in the vector");
-    return static_cast<std::array<Element, s>>(i);
-  }
-
-
-  /** If we do not have a vector, just forward it as a tuple up to the
-      final initialization.
-
-      \return typically tuple<double>{ 2.4 } from 2.4 input for example
-  */
-  template <typename V, typename Type>
-  static auto flatten(const Type i) {
-    return std::make_tuple(i);
-  }
-
-
- /** Take some initializer values and apply flattening on each value
-
-      \return a tuple of scalar initializer values
+  /** An accessor to the first variable of a small array
    */
-  template <typename V, typename... Types>
-  static auto flatten_to_tuple(const Types... i) {
-    // Concatenate the tuples returned by each flattening
-    return std::tuple_cat(flatten<V>(i)...);
-  }
+  DataType& x(){ return (*this)[0]; }
 
-
-  /// \todo To implement
-#if 0
-  vec<dataT,
-      numElements>
-  operator+(const vec<dataT, numElements> &rhs) const;
-  vec<dataT, numElements>
-  operator-(const vec<dataT, numElements> &rhs) const;
-  vec<dataT, numElements>
-  operator*(const vec<dataT, numElements> &rhs) const;
-  vec<dataT, numElements>
-  operator/(const vec<dataT, numElements> &rhs) const;
-  vec<dataT, numElements>
-  operator+=(const vec<dataT, numElements> &rhs);
-  vec<dataT, numElements>
-  operator-=(const vec<dataT, numElements> &rhs);
-  vec<dataT, numElements>
-  operator*=(const vec<dataT, numElements> &rhs);
-  vec<dataT, numElements>
-  operator/=(const vec<dataT, numElements> &rhs);
-  vec<dataT, numElements>
-  operator+(const dataT &rhs) const;
-  vec<dataT, numElements>
-  operator-(const dataT &rhs) const;
-  vec<dataT, numElements>
-  operator*(const dataT &rhs) const;
-  vec<dataT, numElements>
-  operator/(const dataT &rhs) const;
-  vec<dataT, numElements>
-  operator+=(const dataT &rhs);
-  vec<dataT, numElements>
-  operator-=(const dataT &rhs);
-  vec<dataT, numElements>
-  operator*=(const dataT &rhs);
-  vec<dataT, numElements>
-  operator/=(const dataT &rhs);
-  vec<dataT, numElements> &operator=(const vec<dataT, numElements> &rhs);
-  vec<dataT, numElements> &operator=(const dataT &rhs);
-  bool operator==(const vec<dataT, numElements> &rhs) const;
-  bool operator!=(const vec<dataT, numElements> &rhs) const;
-  // Swizzle methods (see notes)
-  swizzled_vec<T, out_dims> swizzle<int s1, ...>();
-#ifdef SYCL_SIMPLE_SWIZZLES
-  swizzled_vec<T, 4> xyzw();
-  ...
-#endif // #ifdef SYCL_SIMPLE_SWIZZLES
-#endif
+  TRISYCL_DECLARE_S(0);
 };
 
+#define TRISYCL_GEN_SWIZ2(str,idx0,idx1) __swizzled_vec__<DataType, 2> str() const { return swizzle<idx0, idx1>(); }
+#define TRISYCL_GEN_SWIZ3(str,idx0,idx1,idx2) __swizzled_vec__<DataType, 3> str() const { return swizzle<idx0, idx1, idx2>(); }
+#define TRISYCL_GEN_SWIZ4(str,idx0,idx1,idx2,idx3) __swizzled_vec__<DataType, 4> str() const { return swizzle<idx0, idx1, idx2, idx3>(); }
+
+template <typename DataType>
+class vec<DataType, 2> : public detail::base_vec<DataType, 2> {
+  using basic_type = detail::base_vec<DataType, 2>;
+
+public:
+
+  // Inherit of all the constructors
+  using basic_type::basic_type;
+
+  /** An accessor to the first variable of a small array
+   */
+  DataType& x(){ return (*this)[0]; }
+
+  /** An accessor to the second variable of a small array
+  */
+  DataType& y(){ return (*this)[1]; }
+
+  TRISYCL_DECLARE_S(0);
+  TRISYCL_DECLARE_S(1);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return basic_type::do_swizzle(swizzleIndexs...);
+  }
+#include "CL/sycl/detail/swiz2.hpp"
+};
+
+template <typename DataType>
+class vec<DataType, 3> : public detail::base_vec<DataType, 3> {
+  using basic_type = detail::base_vec<DataType, 3>;
+
+public:
+
+  // Inherit of all the constructors
+  using basic_type::basic_type;
+
+  /** An accessor to the first variable of a small array
+   */
+  DataType& x(){ return (*this)[0]; }
+
+  /** An accessor to the second variable of a small array
+  */
+  DataType& y(){ return (*this)[1]; }
+
+  /** An accessor to the third variable of a small array
+  */
+  DataType& z(){ return (*this)[2]; }
+
+  TRISYCL_DECLARE_S(0);
+  TRISYCL_DECLARE_S(1);
+  TRISYCL_DECLARE_S(2);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return basic_type::do_swizzle(swizzleIndexs...);
+  }
+#include "CL/sycl/detail/swiz3.hpp"
+};
+  
+template <typename DataType>
+class vec<DataType, 4> : public detail::base_vec<DataType, 4> {
+  using basic_type = detail::base_vec<DataType, 4>;
+
+public:
+
+  // Inherit of all the constructors
+  using basic_type::basic_type;
+
+public:
+  /** An accessor to the first variable of a small array
+   */
+  DataType& x() { return (*this)[0]; }
+
+  /** An accessor to the second variable of a small array
+  */
+  DataType& y() { return (*this)[1]; }
+
+  /** An accessor to the third variable of a small array
+  */
+  DataType& z() { return (*this)[2]; }
+
+  /** An accessor to the third variable of a small array
+  */
+  DataType& w() { return (*this)[3]; }
+
+  DataType& r() { return (*this)[0]; }
+
+  DataType& g() { return (*this)[1]; }
+
+  DataType& b() { return (*this)[2]; }
+
+  DataType& a() { return (*this)[3]; }
+
+  TRISYCL_DECLARE_S(0);
+  TRISYCL_DECLARE_S(1);
+  TRISYCL_DECLARE_S(2);
+  TRISYCL_DECLARE_S(3);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return basic_type::do_swizzle(swizzleIndexs...);
+  }
+#include "CL/sycl/detail/swiz4.hpp"
+#include "CL/sycl/detail/swiz_rgba.hpp"
+};
+#undef TRISYCL_GEN_SWIZ2
+#undef TRISYCL_GEN_SWIZ3
+#undef TRISYCL_GEN_SWIZ4
+
+template <typename DataType>
+class vec<DataType, 8> : public detail::base_vec<DataType, 8> {
+  using basic_type = detail::base_vec<DataType, 8>;
+
+public:
+
+  // Inherit of all the constructors
+  using basic_type::basic_type;
+
+  TRISYCL_DECLARE_S(0);
+  TRISYCL_DECLARE_S(1);
+  TRISYCL_DECLARE_S(2);
+  TRISYCL_DECLARE_S(3);
+  TRISYCL_DECLARE_S(4);
+  TRISYCL_DECLARE_S(5);
+  TRISYCL_DECLARE_S(6);
+  TRISYCL_DECLARE_S(7);
+};
+
+template <typename DataType>
+class vec<DataType, 16> : public detail::base_vec<DataType, 16> {
+  using basic_type = detail::base_vec<DataType, 16>;
+
+public:
+
+  // Inherit of all the constructors
+  using basic_type::basic_type;
+
+  TRISYCL_DECLARE_S(0);
+  TRISYCL_DECLARE_S(1);
+  TRISYCL_DECLARE_S(2);
+  TRISYCL_DECLARE_S(3);
+  TRISYCL_DECLARE_S(4);
+  TRISYCL_DECLARE_S(5);
+  TRISYCL_DECLARE_S(6);
+  TRISYCL_DECLARE_S(7);
+  TRISYCL_DECLARE_S(8);
+  TRISYCL_DECLARE_S(9);
+  TRISYCL_DECLARE_Sx(A);
+  TRISYCL_DECLARE_Sx(B);
+  TRISYCL_DECLARE_Sx(C);
+  TRISYCL_DECLARE_Sx(D);
+  TRISYCL_DECLARE_Sx(E);
+  TRISYCL_DECLARE_Sx(F);
+};
+
+#undef TRISYCL_DECLARE_S
+#undef TRISYCL_DECLARE_Sx
 
   /** A macro to define type alias, such as for type=uchar, size=4 and
       actual_type=unsigned char, uchar4 is equivalent to vec<unsigned char, 4>
