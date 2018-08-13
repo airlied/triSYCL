@@ -227,6 +227,16 @@ struct small_array : std::array<BasicType, Dims>,
     return (*this)[index];
   }
 
+  /// Return the number of elements in the array
+  auto get_count() const {
+    return dimension;
+  }
+
+  /// Return the number of bytes
+  auto get_size() const {
+    return dimension * sizeof(element_type);
+  }
+
   /* Implement minimal methods boost::euclidean_ring_operators needs to
      generate everything */
   /// Add + like operations on the id<> and others
