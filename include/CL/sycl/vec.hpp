@@ -213,6 +213,12 @@ public:
   __swizzled_vec__<DataType, out_dims> hi() const;
   __swizzled_vec__<DataType, out_dims> odd() const;
   __swizzled_vec__<DataType, out_dims> even() const;
+
+#define GEN_SWIZ2(str,idx0,idx1) __swizzled_vec__<DataType, 2> str() const { return swizzle<idx0, idx1>(); }
+#define GEN_SWIZ3(str,idx0,idx1,idx2) __swizzled_vec__<DataType, 3> str() const { return swizzle<idx0, idx1, idx2>(); }
+#define GEN_SWIZ4(str,idx0,idx1,idx2,idx3) __swizzled_vec__<DataType, 4> str() const { return swizzle<idx0, idx1, idx2, idx3>(); }
+
+#include "CL/sycl/vec_swiz.hpp"
 };
 
 
