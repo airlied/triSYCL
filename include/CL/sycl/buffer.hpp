@@ -65,6 +65,7 @@ class buffer
   : public detail::shared_ptr_implementation<
                          buffer<T, Dimensions, Allocator>,
                          detail::buffer_waiter<T, Dimensions, Allocator>>,
+    public property_list,
     detail::debug<buffer<T, Dimensions, Allocator>> {
 public:
 
@@ -110,9 +111,10 @@ public:
 
       \param[in] allocator is to be used by the SYCL runtime
   */
-  buffer(const range<Dimensions> &r, Allocator allocator = {})
+  buffer(const range<Dimensions> &r, Allocator allocator = {}, const property_list &propList = {})
     : implementation_t { detail::waiter<T, Dimensions, Allocator>(
-                         new detail::buffer<T, Dimensions> { r }) }
+        new detail::buffer<T, Dimensions> { r }) },
+      property_list { propList }
       {}
 
 
@@ -145,9 +147,10 @@ public:
             typename = std::enable_if_t<!std::is_const<Dependent>::value>>
   buffer(const T *host_data,
          const range<Dimensions> &r,
-         Allocator allocator = {})
+         Allocator allocator = {}, const property_list &propList = {})
     : implementation_t { detail::waiter(new detail::buffer<T, Dimensions>
-                         { host_data, r }) }
+    { host_data, r }) },
+      property_list { propList }
   {}
 
 
@@ -169,9 +172,10 @@ public:
   */
   buffer(T *host_data,
          const range<Dimensions> &r,
-         Allocator allocator = {})
+         Allocator allocator = {}, const property_list &propList = {})
     : implementation_t { detail::waiter(new detail::buffer<T, Dimensions>
-                         { host_data, r }) }
+    { host_data, r }) },
+      property_list { propList }
   {}
 
 
@@ -199,7 +203,8 @@ public:
   buffer(shared_ptr_class<T> &host_data,
          const range<Dimensions> &buffer_range,
          cl::sycl::mutex_class &m,
-         Allocator allocator = {}) {
+         Allocator allocator = {},
+	 const property_list &propList = {}) : property_list { propList } {
     TRISYCL_UNIMPL;
   }
 
@@ -226,9 +231,11 @@ public:
   */
   buffer(shared_ptr_class<T> host_data,
          const range<Dimensions> &buffer_range,
-         Allocator allocator = {})
+         Allocator allocator = {},
+	 const property_list &propList = {})
     : implementation_t { detail::waiter(new detail::buffer<T, Dimensions>
-                         { host_data, buffer_range }) }
+    { host_data, buffer_range }) },
+      property_list { propList }
   {}
 
 
@@ -271,9 +278,11 @@ public:
             typename std::iterator_traits<InputIterator>::value_type>
   buffer(InputIterator start_iterator,
          InputIterator end_iterator,
-         Allocator allocator = {}) :
+         Allocator allocator = {},
+	 const property_list &propList = {}) :
     implementation_t { detail::waiter(new detail::buffer<T, Dimensions>
-                       { start_iterator, end_iterator }) }
+    { start_iterator, end_iterator }) },
+    property_list { propList }
   {}
 
 
@@ -518,6 +527,15 @@ public:
       set_final_data(std::forward<Iterator>(finalData));
   }
 
+  template <typename propertyT>
+  bool has_property() const {
+    return property_list::has_property<propertyT>();
+  }
+
+  template <typename propertyT>
+  propertyT get_property() const {
+    return property_list::get_property<propertyT>();
+  }
 };
 
 /// @} End the data Doxygen group
