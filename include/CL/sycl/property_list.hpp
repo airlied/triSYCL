@@ -3,6 +3,7 @@
 
 #include "CL/sycl/detail/all_true.hpp"
 #include "CL/sycl/property/queue.hpp"
+#include "CL/sycl/property/buffer.hpp"
 
 namespace cl::sycl {
 
@@ -18,6 +19,10 @@ class property_list {
    * property, this method is recursive to deal with the pack parameter.
    */
   TRISYCL_PROPERTY_CREATE(queue, enable_profiling);
+
+  TRISYCL_PROPERTY_CREATE(buffer, use_host_ptr);
+  TRISYCL_PROPERTY_CREATE(buffer, use_mutex);
+  TRISYCL_PROPERTY_CREATE(buffer, context_bound);
 
 protected:
   template <typename propertyT>
@@ -61,6 +66,10 @@ public:
   }
 
 TRISYCL_PROPERTY_HAS_GET(queue, enable_profiling)
+
+TRISYCL_PROPERTY_HAS_GET(buffer, use_host_ptr)
+TRISYCL_PROPERTY_HAS_GET(buffer, use_mutex)
+TRISYCL_PROPERTY_HAS_GET(buffer, context_bound)
 
 #undef TRISYCL_PROPERTY_CREATE
 #undef TRISYCL_PROPERTY_HAS_GET
