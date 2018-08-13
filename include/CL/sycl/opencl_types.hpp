@@ -179,6 +179,9 @@ template <> struct is_wrapper<type> : std::true_type {};
 // Generate the vector types for all listed scalar types
 BOOST_PP_LIST_FOR_EACH(TRISYCL_DECLARE_CL_TYPES, _, TRISYCL_SCALAR_TYPES)
 
+using cl_bool = bool;
+using cl_half = float;
+using byte = unsigned char;
 } // sycl
 } // cl
 
