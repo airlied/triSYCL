@@ -111,7 +111,13 @@ public:
 
       \param[in] allocator is to be used by the SYCL runtime
   */
-  buffer(const range<Dimensions> &r, Allocator allocator = {}, const property_list &propList = {})
+  buffer(const range<Dimensions> &r, const property_list &propList = {})
+    : implementation_t { detail::waiter<T, Dimensions>(
+        new detail::buffer<T, Dimensions> { r }) },
+      property_list { propList }
+      {}
+
+  buffer(const range<Dimensions> &r, Allocator allocator, const property_list &propList = {})
     : implementation_t { detail::waiter<T, Dimensions, Allocator>(
         new detail::buffer<T, Dimensions> { r }) },
       property_list { propList }
@@ -387,6 +393,18 @@ public:
     return { *this };
   }
 
+  template <access::mode Mode,
+	    access::target Target = access::target::global_buffer>
+  accessor<T, Dimensions, Mode, Target>
+  get_access(handler &command_group_handler, range<Dimensions> accessRange, id<Dimensions>accessOffset = {}) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <access::mode Mode>
+  accessor<T, Dimensions, Mode, access::target::host_buffer>
+  get_access(range<Dimensions> accessRange, id<Dimensions>accessOffset = {}) {
+    TRISYCL_UNIMPL;
+  }
 
   /** Return a range object representing the size of the buffer in
       terms of number of elements in each dimension as passed to the
@@ -535,6 +553,18 @@ public:
   template <typename propertyT>
   propertyT get_property() const {
     return property_list::get_property<propertyT>();
+  }
+
+  Allocator get_allocator() const { return {}; }
+
+  bool is_sub_buffer() const { return false; }
+
+  void set_write_back(bool flag = true) {}
+
+  template<typename ReinterpretT, int ReinterpretDim>
+  buffer<ReinterpretT, ReinterpretDim, Allocator>
+  reinterpret(range<ReinterpretDim> reinterpretRange) const {
+    TRISYCL_UNIMPL;
   }
 };
 
