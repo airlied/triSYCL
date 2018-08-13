@@ -10,13 +10,15 @@
 namespace cl {
 namespace sycl {
 
+	using half = float;
+#if 0
 class half {
 public:
   half(int) {};
 
   bool operator>(const half &h1) { return false; };
 };
-
+#endif
 }
 
 }
