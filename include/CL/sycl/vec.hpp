@@ -202,13 +202,7 @@ public:
   template<typename asT> asT as() const;
   // Swizzle methods (see notes)
   template<int... swizzleIndexs>
-  __swizzled_vec__<DataType, NumElements> swizzle() const;//<int s1, ...>();
-  __swizzled_vec__<DataType, 4> XYZW_ACCESS() const;
-  __swizzled_vec__<DataType, 4> RGBA_ACCESS() const;
-  __swizzled_vec__<DataType, 4> INDEX_ACCESS() const;
-  __swizzled_vec__<DataType, 4> XYZW_SWIZZLE() const;
-  __swizzled_vec__<DataType, 4> RGBA_SWIZZLE() const;
-
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const;//<int s1, ...>();
   __swizzled_vec__<DataType, out_dims> lo() const;
   __swizzled_vec__<DataType, out_dims> hi() const;
   __swizzled_vec__<DataType, out_dims> odd() const;
