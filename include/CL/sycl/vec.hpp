@@ -194,6 +194,15 @@ private:
 
 #endif
 
+  __swizzled_vec__<DataType, 1>do_swizzle(int first) const {
+    return (*this)[first];
+  }
+
+  template<typename T, typename... Ts>
+  __swizzled_vec__<DataType, sizeof...(Ts) + 1>do_swizzle(T first, Ts... swizzleIndexes) const {
+    return __swizzled_vec__<DataType, sizeof...(Ts) + 1> {do_swizzle(first), do_swizzle(swizzleIndexes...) };
+  }
+
 public:
 
   template<typename convertT, rounding_mode roundingMode>
@@ -202,7 +211,9 @@ public:
   template<typename asT> asT as() const;
   // Swizzle methods (see notes)
   template<int... swizzleIndexs>
-  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const;//<int s1, ...>();
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return do_swizzle(swizzleIndexs...);
+  }
   __swizzled_vec__<DataType, out_dims> lo() const;
   __swizzled_vec__<DataType, out_dims> hi() const;
   __swizzled_vec__<DataType, out_dims> odd() const;
