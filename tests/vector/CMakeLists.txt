@@ -4,4 +4,5 @@ project (vector) # The name of our project
 declare_trisycl_test(TARGET operators)
 declare_trisycl_test(TARGET vec)
 declare_trisycl_test(TARGET vecacc)
+declare_trisycl_test(TARGET vecswiz)
 declare_trisycl_test(TARGET cl_types)
