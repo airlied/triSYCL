@@ -136,6 +136,22 @@ struct small_array : std::array<BasicType, Dims>,
     return (*this)[3];
   }
 
+  BasicType& r() {
+    return x();
+  }
+
+  BasicType& g() {
+    return y();
+  }
+
+  BasicType& b() {
+    return z();
+  }
+
+  BasicType& a() {
+    return a();
+  }
+
   /** Accessors to access hex indexed members of a small array.
    * There are two macros, one for 0-9, one for A-F.
    */
