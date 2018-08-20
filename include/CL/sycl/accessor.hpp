@@ -11,6 +11,7 @@
 
 #include <cstddef>
 
+#include "CL/sycl/address_space.hpp"
 #include "CL/sycl/access.hpp"
 #include "CL/sycl/accessor/detail/local_accessor.hpp"
 #include "CL/sycl/buffer/detail/accessor.hpp"
@@ -235,12 +236,12 @@ class accessor :
       Use array_view_type::reference instead of auto& because it does not
       work in some dimensions.
    */
-  typename accessor_detail::reference operator[](std::size_t index) {
+  //typename accessor_detail::reference operator[](std::size_t index) {
 //#ifdef TRISYCL_DEVICE
 //#else
-    return (*implementation)[index];
+//  return (*implementation)[index];
 //#endif
-  }
+//}
 
 
   /** Use the accessor with integers à la [][][]
