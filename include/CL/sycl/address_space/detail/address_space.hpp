@@ -51,6 +51,10 @@
 
 namespace cl {
 namespace sycl {
+
+template <typename T, int, access::mode, access::target, access::placeholder>
+class accessor;
+
 namespace detail {
 
 /** \addtogroup address_spaces
@@ -306,6 +310,15 @@ struct address_space_ptr : public address_space_fundamental<T, AS> {
 
   /// Put back the default constructors canceled by the previous definition
   address_space_ptr() = default;
+
+  template <int dimensions, access::mode Mode, access::placeholder isPlaceholder>
+  address_space_ptr(cl::sycl::accessor<T, dimensions, Mode, access::target::global_buffer, isPlaceholder> access) {}
+
+  template <int dimensions, access::mode Mode, access::placeholder isPlaceholder>
+  address_space_ptr(cl::sycl::accessor<T, dimensions, Mode, access::target::local, isPlaceholder> access) {}
+
+  template <int dimensions, access::mode Mode, access::placeholder isPlaceholder>
+  address_space_ptr(cl::sycl::accessor<T, dimensions, Mode, access::target::constant_buffer, isPlaceholder> access) {}
 };
 
 
