@@ -12,6 +12,7 @@
 #include <cstddef>
 
 #include "CL/sycl/access.hpp"
+#include "CL/sycl/device_event.hpp"
 #include "CL/sycl/detail/linear_id.hpp"
 #include "CL/sycl/detail/unimplemented.hpp"
 #include "CL/sycl/id.hpp"
@@ -226,6 +227,40 @@ public:
   bool operator==(const nd_item<Dimensions> &nd_itemB) const {
     return (item_group == nd_itemB.item_group &&
 	    global_index == nd_itemB.global_index);
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(local_ptr<dataT> dest,
+				     global_ptr<dataT> src,
+				     size_t numElements) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(global_ptr<dataT> dest,
+				     local_ptr<dataT> src,
+				     size_t numElements) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(local_ptr<dataT> dest,
+				     global_ptr<dataT> src,
+				     size_t numElements,
+				     size_t srcStride) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(global_ptr<dataT> dest,
+				     local_ptr<dataT> src,
+				     size_t numElements,
+				     size_t destStride) const {
+    TRISYCL_UNIMPL;
+    return {};
   }
 };
 
