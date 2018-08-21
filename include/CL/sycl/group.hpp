@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <functional>
 
+#include "CL/sycl/device_event.hpp"
 #include "CL/sycl/detail/linear_id.hpp"
 #include "CL/sycl/h_item.hpp"
 #include "CL/sycl/id.hpp"
