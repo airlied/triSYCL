@@ -191,6 +191,40 @@ public:
     return (group_id == groupB.group_id &&
 	    ndr == groupB.ndr);
   }
+
+  template<typename dataT>
+  device_event async_work_group_copy(local_ptr<dataT> dest,
+				     global_ptr<dataT> src,
+				     size_t numElements) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(global_ptr<dataT> dest,
+				     local_ptr<dataT> src,
+				     size_t numElements) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(local_ptr<dataT> dest,
+				     global_ptr<dataT> src,
+				     size_t numElements,
+				     size_t srcStride) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  template<typename dataT>
+  device_event async_work_group_copy(global_ptr<dataT> dest,
+				     local_ptr<dataT> src,
+				     size_t numElements,
+				     size_t destStride) const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
 };
 
 /// @} End the parallelism Doxygen group
