@@ -22,12 +22,12 @@ namespace sycl {
     @{
 */
 
-template <int Dimensions>
+template <int Dimensions, bool with_offset>
 class item;
 /** A SYCL item stores information on a work-item with some more context
     such as the definition range and offset.
 */
-template <int Dimensions = 1>
+template <int Dimensions = 1, bool with_offset = true>
 class item : boost::equality_comparable<item<Dimensions>> {
 
 public:
@@ -96,7 +96,10 @@ public:
       For an item representing a local range of where no offset was passed
       this will always return an id of all 0 values.
   */
-  id<Dimensions> get_offset() const { return offset; }
+  id<Dimensions> get_offset() const {
+    static_assert(with_offset == true, "get_offset only callable with has_offset = true");
+    return offset;
+  }
 
 
   /** Return the linearized ID in the item's range
@@ -114,6 +117,13 @@ public:
   */
   void set(id<Dimensions> Index) { global_index = Index; }
 
+
+  operator item<Dimensions, true> () const {
+    static_assert(with_offset == false, "get_offset only callable with has_offset = true");
+    item<Dimensions, true> new_item = *this;
+    new_item.offset = 0;
+    return new_item;
+  }
 
   /// Display the value for debugging and validation purpose
   void display() const {
