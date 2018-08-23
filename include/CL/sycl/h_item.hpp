@@ -175,13 +175,60 @@ public:
     return get_nd_range().get_global_range();
   }
 
+  /// Return a range<> representing the dimensions of the nd_range<>
+  size_t get_global_range(int dimension) const {
+    return get_nd_range().get_global_range()[dimension];
+  }
 
   /// Return a range<> representing the dimensions of the current work-group
   range<Dimensions> get_local_range() const {
     return get_nd_range().get_local_range();
   }
 
+    /// Return a range<> representing the dimensions of the current work-group
+  size_t get_local_range(int dimension) const {
+    return get_nd_range().get_local_range()[dimension];
+  }
 
+  range<Dimensions> get_logical_local_range() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  size_t get_logical_local_range(int dimension) const {
+    TRISYCL_UNIMPL;
+    return 0;
+  }
+
+  id<Dimensions> get_logical_local_id() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  size_t get_logical_local_id(int dimension) const {
+    TRISYCL_UNIMPL;
+    return 0;
+  }
+
+  range<Dimensions> get_physical_local_range() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  size_t get_physical_local_range(int dimension) const {
+    TRISYCL_UNIMPL;
+    return 0;
+  }
+
+  id<Dimensions> get_physical_local_id() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  size_t get_physical_local_id(int dimension) const {
+    TRISYCL_UNIMPL;
+    return 0;
+  }
   /** Return an id<> representing the n-dimensional offset provided to the
       constructor of the nd_range<> and that is added by the runtime to the
       global-ID of each work-item
@@ -201,6 +248,25 @@ public:
     return { get_global_range(), get_global_id(), get_offset() };
   }
 
+  item<Dimensions, false> get_global() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  item<Dimensions, false> get_local() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  item<Dimensions, false> get_logical_local() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
+
+  item<Dimensions, false> get_physical_local() const {
+    TRISYCL_UNIMPL;
+    return {};
+  }
 
   /** Execute a barrier with memory ordering on the local address space,
       global address space or both based on the value of flag
