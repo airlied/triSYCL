@@ -170,6 +170,10 @@ public:
   }
 
 
+  T *get_pointer() const {
+    return array.origin();
+  }
+
   /** Use the accessor with integers à la [][][]
 
       Use array_view_type::reference instead of auto& because it does not
