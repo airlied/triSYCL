@@ -197,6 +197,11 @@ public:
 	    ndr == groupB.ndr);
   }
 
+  template <access::mode accessMode = access::mode::read_write>
+  void mem_fence(access::fence_space accessSpace = access::fence_space::global_and_local) const {
+    TRISYCL_UNIMPL;
+  }
+
   template<typename dataT>
   device_event async_work_group_copy(local_ptr<dataT> dest,
 				     global_ptr<dataT> src,
@@ -229,6 +234,11 @@ public:
 				     size_t destStride) const {
     TRISYCL_UNIMPL;
     return {};
+  }
+
+  template <typename... eventTN>
+  void wait_for(eventTN... events) const {
+    TRISYCL_UNIMPL;
   }
 };
 
