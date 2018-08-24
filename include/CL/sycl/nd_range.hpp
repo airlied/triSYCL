@@ -71,6 +71,8 @@ public:
        next integer, in case the global range is not a multiple of the
        local range. Note this is a motivating example to build a range
        from a scalar with a broadcasting constructor. */
+    if (local_range[0] == 0)
+      return range<Dimensions> { 0 };
     return (global_range + local_range - range<Dimensions>{ 1 })/local_range;
   }
 
