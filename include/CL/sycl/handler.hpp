@@ -495,6 +495,40 @@ public:
     TRISYCL_UNIMPL;
   }
 
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void copy(accessor<T, dim, mode, tgt> src, shared_ptr_class<T> dest) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void copy(shared_ptr_class<T> src, accessor<T, dim, mode, tgt> dest) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void copy(accessor<T, dim, mode, tgt> src, T *dest) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void copy(const T *src, accessor<T, dim, mode, tgt> dest) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void copy(accessor<T, dim, mode, tgt> src, accessor<T, dim, mode, tgt> dest) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void update_host(accessor<T, dim, mode, tgt> acc) {
+    TRISYCL_UNIMPL;
+  }
+
+  template <typename T, int dim, access::mode mode, access::target tgt>
+  void fill(accessor<T, dim, mode, tgt> dest, const T& src) {
+    TRISYCL_UNIMPL;
+  }
 };
 
 namespace detail {
