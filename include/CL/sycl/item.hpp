@@ -107,7 +107,7 @@ public:
       Computed as the flatted ID after the offset is subtracted.
   */
   size_t get_linear_id() const {
-    return detail::linear_id(get_range(), get_id(), get_offset());
+    return detail::linear_id(get_range(), get_id(), offset);
   }
 
 
