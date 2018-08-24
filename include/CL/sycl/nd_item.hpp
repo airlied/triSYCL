@@ -16,7 +16,7 @@
 #include "CL/sycl/detail/unimplemented.hpp"
 #include "CL/sycl/id.hpp"
 #include "CL/sycl/item.hpp"
-#include "CL/sycl/nd_range.hpp"
+#include "CL/sycl/group.hpp"
 #include "CL/sycl/range.hpp"
 
 namespace cl {
@@ -41,7 +41,7 @@ private:
   /* This is a cached value since it can be computed from global_index and
      ND_range */
   id<Dimensions> local_index;
-  nd_range<Dimensions> ND_range;
+  group<Dimensions> item_group;
 
 public:
 
@@ -51,7 +51,7 @@ public:
       call set_global() and set_local() later. This should be hidden to
       the user.
   */
-  nd_item(nd_range<Dimensions> ndr) : ND_range { ndr } {}
+  nd_item(nd_range<Dimensions> ndr) : item_group { ndr } {}
 
 
   /** Create a full nd_item
@@ -65,7 +65,7 @@ public:
     // Compute the local index using the offset and the group size
     local_index { (global_index - ndr.get_offset())%id<Dimensions> {
         ndr.get_local_range() } },
-    ND_range { ndr }
+    item_group { ndr }
   {}
 
 
@@ -127,10 +127,10 @@ public:
   /** Return the constituent group representing the work-group's
       position within the overall nd_range
   */
-  id<Dimensions> get_group() const {
+  group<Dimensions> get_group() const {
     /* Convert get_local_range() to an id<> to remove ambiguity into using
        implicit conversion either from range<> to id<> or the opposite */
-    return get_global_id()/id<Dimensions> { get_local_range() };
+    return item_group;
   }
 
 
@@ -139,13 +139,13 @@ public:
       dimension.
   */
   size_t get_group(int dimension) const {
-    return get_group()[dimension];
+    return get_group().get_id()[dimension];
   }
 
 
   /// Return the flattened id of the current work-group
   size_t get_group_linear_id() const {
-    return detail::linear_id(get_group_range(), get_group());
+    return detail::linear_id(get_group_range(), get_group().get_id());
   }
 
 
@@ -180,7 +180,7 @@ public:
 
 
   /// Return the nd_range<> of the current execution
-  nd_range<Dimensions> get_nd_range() const { return ND_range; }
+  nd_range<Dimensions> get_nd_range() const { return get_group().get_nd_range(); }
 
 
   /** Allows projection down to an item
@@ -224,7 +224,7 @@ public:
 
   // Comparison operators
   bool operator==(const nd_item<Dimensions> &nd_itemB) const {
-    return (ND_range == nd_itemB.ND_range &&
+    return (item_group == nd_itemB.item_group &&
 	    global_index == nd_itemB.global_index);
   }
 };

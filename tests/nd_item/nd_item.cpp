@@ -80,7 +80,7 @@ auto display_test = [](auto ndi) {
   ndi.get_local_id().display();
   DISPLAY_ELEMENTS(get_local_id);
   std::cout << ndi.get_local_linear_id() << std::endl;
-  ndi.get_group().display();
+  ndi.get_group().get_id().display();
   DISPLAY_ELEMENTS(get_group);
   std::cout << ndi.get_group_linear_id() << std::endl;
   ndi.get_group_range().display();
