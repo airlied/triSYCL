@@ -22,11 +22,13 @@ namespace sycl {
     @{
 */
 
+template <int Dimensions>
+class item;
 /** A SYCL item stores information on a work-item with some more context
     such as the definition range and offset.
 */
 template <int Dimensions = 1>
-class item {
+class item : boost::equality_comparable<item<Dimensions>> {
 
 public:
 
@@ -120,6 +122,12 @@ public:
     offset.display();
   }
 
+  /// Comparison operators for item
+  bool operator==(const item<Dimensions> &itemB) const {
+    return (global_range == itemB.global_range &&
+            global_index == itemB.global_index &&
+            offset == itemB.offset);
+  }
 };
 
 /// @} End the parallelism Doxygen group
