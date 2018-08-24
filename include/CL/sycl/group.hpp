@@ -185,6 +185,11 @@ public:
     detail::parallel_for_workitem_in_group(*this, f);
   }
 
+  void parallel_for_work_item(range<Dimensions> flexibleRange, std::function<void(h_item<dimensionality>)> f)
+    const {
+    detail::parallel_for_workitem_in_group(*this, f);
+  }
+
   /* Comparison operators for group object.
    */
   bool operator==(const group &groupB) const {

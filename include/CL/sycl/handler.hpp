@@ -448,6 +448,38 @@ public:
   TRISYCL_ParallelForKernel_RANGE(3)
 #undef TRISYCL_ParallelForKernel_RANGE
 
+#define TRISYCL_ParallelForKernel_RANGEOFFSET(N)                        \
+  void parallel_for(range<N> num_work_items,                            \
+                    id<N> work_item_offset,                             \
+                    kernel sycl_kernel) {                               \
+    /* For now just use the usual host task system to schedule          \
+       manually the OpenCL kernels instead of using OpenCL event-based  \
+       scheduling                                                       \
+                                                                        \
+       \todo Move the tracing inside the kernel implementation          \
+                                                                        \
+       \todo Simplify this 2 step ugly interface                        \
+    */                                                                  \
+    task->set_kernel(sycl_kernel.implementation);                       \
+    /* Use an intermediate variable to capture task by copy because     \
+       otherwise "this" is captured by reference and havoc with task    \
+       just accessing the dead "this". Nasty bug to find... */          \
+    task->schedule(detail::trace_kernel<kernel>([=, t = task] {         \
+          sycl_kernel.implementation->parallel_for(t, t->get_queue(),   \
+                                                   num_work_items); })); \
+  }
+
+
+  /* Do not use a template parameter since otherwise the parallel_for
+     functor is selected instead of this one
+
+     \todo Clean this
+  */
+  TRISYCL_ParallelForKernel_RANGEOFFSET(1)
+  TRISYCL_ParallelForKernel_RANGEOFFSET(2)
+  TRISYCL_ParallelForKernel_RANGEOFFSET(3)
+#undef TRISYCL_ParallelForKernel_RANGEOFFSET
+
   /** Kernel invocation method of a kernel defined as pointer to a kernel
       object, for the specified nd_range and given an nd_item for indexing
       in the indexing space defined by the nd_range, described in detail
