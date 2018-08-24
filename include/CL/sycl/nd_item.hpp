@@ -134,7 +134,6 @@ public:
     return item_group;
   }
 
-
   /** Return the constituent element of the group id representing the
       work-group;s position within the overall nd_range in the given
       dimension.
@@ -152,24 +151,24 @@ public:
 
   /// Return the number of groups in the nd_range
   id<Dimensions> get_group_range() const {
-    return get_nd_range().get_group_range();
+    return get_group().get_group_range();
   }
 
   /// Return the number of groups for dimension in the nd_range
   size_t get_group_range(int dimension) const {
-     return get_group_range()[dimension];
+    return get_group().get_group_range()[dimension];
   }
 
 
   /// Return a range<> representing the dimensions of the nd_range<>
   range<Dimensions> get_global_range() const {
-    return get_nd_range().get_global_range();
+    return get_group().get_global_range();
   }
 
 
   /// Return a range<> representing the dimensions of the current work-group
   range<Dimensions> get_local_range() const {
-    return get_nd_range().get_local_range();
+    return get_group().get_local_range();
   }
 
 
@@ -177,7 +176,7 @@ public:
       constructor of the nd_range<> and that is added by the runtime to the
       global-ID of each work-item
   */
-  id<Dimensions> get_offset() const { return get_nd_range().get_offset(); }
+  id<Dimensions> get_offset() const { return get_group().get_offset(); }
 
 
   /// Return the nd_range<> of the current execution
@@ -213,6 +212,12 @@ public:
     // \todo To be implemented efficiently otherwise
     TRISYCL_UNIMPL;
 #endif
+  }
+
+  template <access::mode accessMode = access::mode::read_write>
+  void mem_fence(access::fence_space accessSpace = access::fence_space::global_and_local) const
+  {
+    TRISYCL_UNIMPL;
   }
 
 
@@ -261,6 +266,11 @@ public:
 				     size_t destStride) const {
     TRISYCL_UNIMPL;
     return {};
+  }
+
+  template <typename... eventTN>
+  void wait_for(eventTN... events) const {
+    TRISYCL_UNIMPL;
   }
 };
 
