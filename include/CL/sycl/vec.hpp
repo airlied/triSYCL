@@ -57,7 +57,12 @@ struct elem {
  */
 template<typename, int>
 class vec;
+
+template <typename DataType, int numElements>
+using __swizzled_vec__ = vec<DataType, numElements>;
+
 }
+
 
 /** \addtogroup vector Vector types in SYCL
 
@@ -84,6 +89,11 @@ namespace cl::sycl {
   DataType& s##x() {                                                    \
     return (*this)[(0x##x)];                                            \
   }
+
+#define TRISYCL_GEN_SWIZ2(str,idx0,idx1) __swizzled_vec__<DataType, 2> str() const { return swizzle<idx0, idx1>(); }
+#define TRISYCL_GEN_SWIZ3(str,idx0,idx1,idx2) __swizzled_vec__<DataType, 3> str() const { return swizzle<idx0, idx1, idx2>(); }
+#define TRISYCL_GEN_SWIZ4(str,idx0,idx1,idx2,idx3) __swizzled_vec__<DataType, 4> str() const { return swizzle<idx0, idx1, idx2, idx3>(); }
+
 
 template<typename DataType>
 class vec<DataType, 1> : public detail::vec<DataType, 1> {
@@ -126,6 +136,28 @@ public:
 
   TRISYCL_DECLARE_S(0);
   TRISYCL_DECLARE_S(1);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return base_vec::do_swizzle(swizzleIndexs...);
+  }
+
+  __swizzled_vec__<DataType, 1> lo() const {
+    return swizzle<elem::s0>();
+  }
+
+  __swizzled_vec__<DataType, 1> hi() const {
+    return swizzle<elem::s1>();
+  }
+
+  __swizzled_vec__<DataType, 1> odd() const {
+    return swizzle<elem::s1>();
+  }
+
+  __swizzled_vec__<DataType, 1> even() const {
+    return swizzle<elem::s0>();
+  }
+#include "CL/sycl/vec/detail/swiz2.hpp"
 };
 
 template<typename DataType>
@@ -158,6 +190,28 @@ public:
   TRISYCL_DECLARE_S(0);
   TRISYCL_DECLARE_S(1);
   TRISYCL_DECLARE_S(2);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return base_vec::do_swizzle(swizzleIndexs...);
+  }
+
+  __swizzled_vec__<DataType, 2> lo() const {
+    return swizzle<elem::s0, elem::s1>();
+  }
+
+  __swizzled_vec__<DataType, 2> hi() const {
+    return swizzle<elem::s2, elem::s2>();
+  }
+
+  __swizzled_vec__<DataType, 2> odd() const {
+    return swizzle<elem::s1, elem::s1>();
+  }
+
+  __swizzled_vec__<DataType, 2> even() const {
+    return swizzle<elem::s0, elem::s2>();
+  }
+#include "CL/sycl/vec/detail/swiz3.hpp"
 };
 
 template<typename DataType>
@@ -221,7 +275,35 @@ public:
   TRISYCL_DECLARE_S(1);
   TRISYCL_DECLARE_S(2);
   TRISYCL_DECLARE_S(3);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return base_vec::do_swizzle(swizzleIndexs...);
+  }
+
+  __swizzled_vec__<DataType, 2> lo() const {
+    return swizzle<elem::s0, elem::s1>();
+  }
+
+  __swizzled_vec__<DataType, 2> hi() const {
+    return swizzle<elem::s2, elem::s3>();
+  }
+
+  __swizzled_vec__<DataType, 2> odd() const {
+    return swizzle<elem::s1, elem::s3>();
+  }
+
+  __swizzled_vec__<DataType, 2> even() const {
+    return swizzle<elem::s0, elem::s2>();
+  }
+
+#include "CL/sycl/vec/detail/swiz4.hpp"
+#include "CL/sycl/vec/detail/swiz_rgba.hpp"
 };
+
+#undef TRISYCL_GEN_SWIZ2
+#undef TRISYCL_GEN_SWIZ3
+#undef TRISYCL_GEN_SWIZ4
 
 template<typename DataType>
 class vec<DataType, 8> : public detail::vec<DataType, 8> {
@@ -241,6 +323,28 @@ public:
   TRISYCL_DECLARE_S(6);
   TRISYCL_DECLARE_S(7);
   TRISYCL_DECLARE_S(8);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return base_vec::do_swizzle(swizzleIndexs...);
+  }
+
+  __swizzled_vec__<DataType, 4> lo() const {
+    return swizzle<elem::s0, elem::s1, elem::s2, elem::s3>();
+  }
+
+  __swizzled_vec__<DataType, 4> hi() const {
+    return swizzle<elem::s3, elem::s4, elem::s5, elem::s6>();
+  }
+
+  __swizzled_vec__<DataType, 4> odd() const {
+    return swizzle<elem::s1, elem::s3, elem::s5, elem::s7>();
+  }
+
+  __swizzled_vec__<DataType, 4> even() const {
+    return swizzle<elem::s0, elem::s2, elem::s4, elem::s6>();
+  }
+
 };
 
 
@@ -269,6 +373,28 @@ public:
   TRISYCL_DECLARE_Sx(D);
   TRISYCL_DECLARE_Sx(E);
   TRISYCL_DECLARE_Sx(F);
+
+  template<int... swizzleIndexs>
+  __swizzled_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return base_vec::do_swizzle(swizzleIndexs...);
+  }
+
+  __swizzled_vec__<DataType, 8> lo() const {
+    return swizzle<elem::s0, elem::s1, elem::s2, elem::s3, elem::s4, elem::s5, elem::s6, elem::s7>();
+  }
+
+  __swizzled_vec__<DataType, 8> hi() const {
+    return swizzle<elem::s8, elem::s9, elem::sA, elem::sB, elem::sC, elem::sD, elem::sE, elem::sF>();
+  }
+
+  __swizzled_vec__<DataType, 8> odd() const {
+    return swizzle<elem::s1, elem::s3, elem::s5, elem::s7, elem::s9, elem::sB, elem::sD, elem::sF>();
+  }
+
+  __swizzled_vec__<DataType, 8> even() const {
+    return swizzle<elem::s0, elem::s2, elem::s4, elem::s6, elem::s8, elem::sA, elem::sC, elem::sE>();
+  }
+
 };
 
 #undef TRISYCL_DECLARE_S

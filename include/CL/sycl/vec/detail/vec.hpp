@@ -16,6 +16,11 @@
 
 namespace cl::sycl::detail {
 
+template <typename, int>
+class vec;
+template <typename DataType, int numElements>
+using __swizzled_base_vec__ = detail::vec<DataType, numElements>;
+
 /** Small OpenCL vector class
  */
 template <typename DataType, int NumElements>
@@ -25,7 +30,6 @@ class vec : public detail::small_array<DataType,
   using basic_type = typename detail::small_array<DataType,
                                                   cl::sycl::vec<DataType, NumElements>,
                                                   NumElements>;
-
 public:
 
   /** Construct a vec from anything from a scalar (to initialize all the
@@ -90,6 +94,16 @@ private:
     return std::tuple_cat(flatten<V>(i)...);
   }
 
+protected:
+  __swizzled_base_vec__<DataType, 1>do_swizzle(int first) const {
+    return (*this)[first];
+  }
+
+  template<typename T, typename... Ts>
+  __swizzled_base_vec__<DataType, sizeof...(Ts) + 1>do_swizzle(T first, Ts... swizzleIndexes) const {
+    return __swizzled_base_vec__<DataType, sizeof...(Ts) + 1> {do_swizzle(first), do_swizzle(swizzleIndexes...) };
+  }
+
 public:
 
   /// Return the number of elements in the vector
@@ -113,7 +127,12 @@ public:
     return {};
   };
 
-  /// \todo To implement swizzles
+  // Swizzle methods (see notes)
+  template<int... swizzleIndexs>
+  __swizzled_base_vec__<DataType, sizeof...(swizzleIndexs)> swizzle() const {
+    return do_swizzle(swizzleIndexs...);
+  }
+
 };
 
 
