@@ -102,6 +102,17 @@ public:
     return NumElements * sizeof(DataType);
   }
 
+  template<typename convertT, rounding_mode roundingMode>
+  vec<convertT, NumElements> convert() const {
+    TRISYCL_UNIMPL;
+    return {};
+  };
+
+  template<typename asT> asT as() const {
+    TRISYCL_UNIMPL;
+    return {};
+  };
+
   /// \todo To implement swizzles
 };
 
