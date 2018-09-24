@@ -24,6 +24,9 @@
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/device/detail/opencl_device.hpp"
 #endif
+#ifdef TRISYCL_VULKAN
+#include "CL/sycl/device/detail/vulkan_device.hpp"
+#endif
 #include "CL/sycl/id.hpp"
 #include "CL/sycl/info/device.hpp"
 #include "CL/sycl/device_selector.hpp"

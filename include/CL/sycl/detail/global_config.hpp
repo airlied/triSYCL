@@ -70,6 +70,14 @@
 #define TRISYCL_DEVICE_ONLY(X)
 #endif
 
+/** Define TRISYCL_VULKAN to add Vulkan
+
+    triSYCL can indeed work without Vulkan if only host support is needed.
+*/
+#ifdef TRISYCL_VULKAN
+#include <vulkan/vulkan.h>
+#endif
+
 /// @} End the defaults Doxygen group
 
 // Compiler specific weak linking (until changing to C++17 inline variables/functions)

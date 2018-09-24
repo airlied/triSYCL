@@ -15,6 +15,9 @@
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/context/detail/opencl_context.hpp"
 #endif
+#ifdef TRISYCL_VULKAN
+#include "CL/sycl/context/detail/vulkan_context.hpp"
+#endif
 
 #include "CL/sycl/detail/default_classes.hpp"
 #include "CL/sycl/detail/shared_ptr_implementation.hpp"

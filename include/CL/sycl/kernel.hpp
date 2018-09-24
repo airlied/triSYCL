@@ -22,6 +22,10 @@
 #include "CL/sycl/kernel/detail/opencl_kernel.hpp"
 #endif
 
+#ifdef TRISYCL_VULKAN
+#include "CL/sycl/kernel/detail/vulkan_kernel.hpp"
+#endif
+
 namespace cl {
 namespace sycl {
 

@@ -30,6 +30,9 @@
 #ifdef TRISYCL_OPENCL
 #include "CL/sycl/queue/detail/opencl_queue.hpp"
 #endif
+#ifdef TRISYCL_VULKAN
+#include "CL/sycl/queue/detail/vulkan_queue.hpp"
+#endif
 
 namespace cl {
 namespace sycl {
