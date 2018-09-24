@@ -118,6 +118,7 @@ endif()
 #triSYCL options
 option(TRISYCL_OPENMP "triSYCL multi-threading with OpenMP" ON)
 option(TRISYCL_OPENCL "triSYCL OpenCL interoperability mode" OFF)
+option(TRISYCL_VULKAN "triSYCL Vulkan interoperability mode" OFF)
 option(TRISYCL_NO_ASYNC "triSYCL use synchronous kernel execution" OFF)
 option(TRISYCL_DEBUG "triSYCL use debug mode" OFF)
 option(TRISYCL_DEBUG_STRUCTORS "triSYCL trace of object lifetimes" OFF)
@@ -126,6 +127,7 @@ option(TRISYCL_INCLUDE_DIR  "triSYCL include directory" OFF)
 
 mark_as_advanced(TRISYCL_OPENMP)
 mark_as_advanced(TRISYCL_OPENCL)
+mark_as_advanced(TRISYCL_VULKAN)
 mark_as_advanced(TRISYCL_NO_ASYNC)
 mark_as_advanced(TRISYCL_DEBUG)
 mark_as_advanced(TRISYCL_DEBUG_STRUCTORS)
@@ -161,6 +163,10 @@ if(TRISYCL_OPENCL)
   endif(UNIX)
 endif()
 
+if(TRISYCL_VULKAN)
+  find_package(Vulkan REQUIRED)
+endif()
+
 # Find OpenMP package
 if(TRISYCL_OPENMP)
   find_package(OpenMP REQUIRED)
@@ -178,6 +184,7 @@ endif()
 
 option(TRISYCL_OPENMP "triSYCL multi-threading with OpenMP" ON)
 option(TRISYCL_OPENCL "triSYCL OpenCL interoperability mode" OFF)
+option(TRISYCL_VULKAN "triSYCL Vulkan mode" OFF)
 option(TRISYCL_NO_ASYNC "triSYCL use synchronous kernel execution" OFF)
 option(TRISYCL_DEBUG "triSYCL use debug mode" OFF)
 option(TRISYCL_DEBUG_STRUCTORS "triSYCL trace of object lifetimes" OFF)
@@ -186,6 +193,7 @@ option(TRISYCL_INCLUDE_DIR  "Use triSYCL include directory" OFF)
 
 message(STATUS "triSYCL OpenMP:                   ${TRISYCL_OPENMP}")
 message(STATUS "triSYCL OpenCL:                   ${TRISYCL_OPENCL}")
+message(STATUS "triSYCL Vulkan:                   ${TRISYCL_VULKAN}")
 message(STATUS "triSYCL synchronous execution:    ${TRISYCL_NO_ASYNC}")
 message(STATUS "triSYCL debug mode:               ${TRISYCL_DEBUG}")
 message(STATUS "triSYCL object trace:             ${TRISYCL_DEBUG_STRUCTORS}")
@@ -208,11 +216,13 @@ function(add_sycl_to_target targetName)
     ${PROJECT_SOURCE_DIR}/tests/common
     ${Boost_INCLUDE_DIRS}
     $<$<BOOL:${TRISYCL_OPENCL}>:${OpenCL_INCLUDE_DIRS}>
-    $<$<BOOL:${TRISYCL_OPENCL}>:${BOOST_COMPUTE_INCPATH}>)
+    $<$<BOOL:${TRISYCL_OPENCL}>:${BOOST_COMPUTE_INCPATH}>
+    $<$<BOOL:${TRISYCL_VULKAN}>:${Vulkan_INCLUDE_DIRS}>)
 
   # Link dependencies
   target_link_libraries(${targetName} PUBLIC
     $<$<BOOL:${TRISYCL_OPENCL}>:${OpenCL_LIBRARIES}>
+    $<$<BOOL:${TRISYCL_VULKAN}>:${Vulkan_LIBRARIES}>
     Threads::Threads
     $<$<BOOL:${LOG_NEEDED}>:Boost::log>
     Boost::chrono)
@@ -221,6 +231,7 @@ function(add_sycl_to_target targetName)
   target_compile_definitions(${targetName} PUBLIC
     $<$<BOOL:${TRISYCL_NO_ASYNC}>:TRISYCL_NO_ASYNC>
     $<$<BOOL:${TRISYCL_OPENCL}>:TRISYCL_OPENCL>
+    $<$<BOOL:${TRISYCL_VULKAN}>:TRISYCL_VULKAN>
     $<$<BOOL:${TRISYCL_OPENCL}>:BOOST_COMPUTE_USE_OFFLINE_CACHE>
     $<$<BOOL:${TRISYCL_DEBUG}>:TRISYCL_DEBUG>
     $<$<BOOL:${TRISYCL_DEBUG_STRUCTORS}>:TRISYCL_DEBUG_STRUCTORS>
